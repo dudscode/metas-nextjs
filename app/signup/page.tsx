@@ -1,10 +1,11 @@
-import { LoginForm } from "@/components/template/login-form";
+"use client"
+import { SignupForm } from "@/components/template/signup-form"
 
-export default function Login() {
-   return (
+export default function Page() {
+  return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-sm">
-        <LoginForm />
+        <SignupForm />
       </div>
     </div>
   )
