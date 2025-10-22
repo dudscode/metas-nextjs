@@ -1,3 +1,6 @@
+"use client"
+
+import React, { useState } from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -15,13 +18,35 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 
-export function LoginForm({
-    className,
-    ...props
-}: React.ComponentProps<"div">) {
-    const handleLogin = () => {
-        console.log("login payload:");
-    };
+interface LoginPayload {
+    email: string
+    password: string
+}
+
+type LoginFormProps = Omit<React.ComponentProps<"div">, "onSubmit"> & {
+    onLogin?: (payload: LoginPayload) => void | Promise<void>
+}
+
+export function LoginForm({ className, onLogin, ...props }: LoginFormProps) {
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [isSubmitting, setIsSubmitting] = useState(false)
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+        const payload: LoginPayload = { email, password }
+        setIsSubmitting(true)
+        try {
+            if (onLogin) {
+                await onLogin(payload)
+            } else {
+                console.log("login payload:", payload)
+            }
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
+
     return (
         <div className={cn("flex flex-col gap-6", className)} {...props}>
             <Card>
@@ -32,7 +57,7 @@ export function LoginForm({
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <form>
+                    <form onSubmit={handleSubmit}>
                         <FieldGroup>
                             <Field>
                                 <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -41,6 +66,8 @@ export function LoginForm({
                                     type="email"
                                     placeholder="m@example.com"
                                     required
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
                                 />
                             </Field>
                             <Field>
@@ -53,10 +80,18 @@ export function LoginForm({
                                         Esqueceu sua senha?
                                     </a>
                                 </div>
-                                <Input id="password" type="password" required />
+                                <Input
+                                    id="password"
+                                    type="password"
+                                    required
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                />
                             </Field>
                             <Field>
-                                <Button onClick={() => { handleLogin() }} >Login</Button>
+                                <Button type="submit" disabled={isSubmitting}>
+                                    {isSubmitting ? "Entrando..." : "Login"}
+                                </Button>
                                 <FieldDescription className="text-center">
                                     Não tem uma conta? <a href="#signup">Inscreva-se</a>
                                 </FieldDescription>
