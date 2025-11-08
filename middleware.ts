@@ -14,7 +14,7 @@ export function middleware(req: NextRequest) {
   }
 
 
-  if (pathname === "/login" || pathname === "/" || pathname === "/signup") return NextResponse.next();
+  if (pathname === "/login" || pathname === "/signup") return NextResponse.next();
 
   const id = req.cookies.get("idGoalsUser")?.value;
   if (!id) {

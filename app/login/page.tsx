@@ -28,7 +28,7 @@ export default function Login() {
             setError(false)
             document.cookie = `idGoalsUser=${data.idUser}; path=/`
             console.log("login success:", data)
-            router.push('/home')
+            router.push('/')
         } catch (error) {
             setError(true)
             console.error("Login error:", error)
