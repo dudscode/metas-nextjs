@@ -1,48 +1,79 @@
-'use client'
+"use client"
 import { useState } from 'react';
 import { List } from './list'
 import { Goal } from '@/types/goals.interface'
+import React from 'react';
+import useGoalsStore, { GoalsState } from '@/lib/useGoalsStore'
 
-const mock: Goal[] = [
-    {
-        id: '1',
-        name: 'Meta 1',
-        description: 'Descrição da Meta 1',
-        status: 'pendente',
-        linkUpdate: 'https://example.com/update/1',
-    },
-    {
-        id: '2',
-        name: 'Meta 2',
-        description: 'Descrição da Meta 2',
-        status: 'Finalizado',
-        linkUpdate: 'https://example.com/update/2',
-    },
-    {
-        id: '3',
-        name: 'Meta 3',
-        description: 'Descrição da Meta 3',
-        status: 'pendente',
-        linkUpdate: 'https://example.com/update/3',
-    },
-]
+
 
 
 export default function ListClient() {
-    const initialFinished =  mock.filter(g => g.status === 'Finalizado')
-    const initialPending = mock.filter(g => g.status === 'pendente')
 
-    const [finished, setFinished] = useState<Goal[]>(initialFinished)
-    const [pending, setPending] = useState<Goal[]>(initialPending)
+    const [finished, setFinished] = useState<Goal[]>([])
+    const [pending, setPending] = useState<Goal[]>([])
 
-    function handleComplete(goal: Goal) {
-        const updated = { ...goal, status: 'Finalizado' } as Goal
-        setPending((prev: Goal[]) => prev.filter((g: Goal) => g.id !== goal.id))
-        setFinished((prev: Goal[]) => {
-            if (prev.find((g: Goal) => g.id === goal.id)) return prev
-            return [...prev, updated]
-        })
-        console.log('Meta marcada como completa (client wrapper):', updated)
+    const handleLoadGoals = async () => {
+        const userID = await cookieStore.get("idGoalsUser").then(cookie => cookie?.value || "");
+        try {
+            const res = await fetch("http://localhost:8080/goal/" + userID, {
+                method: "GET",
+                headers: { "Content-Type": "application/json" }
+            })
+
+            if (!res.ok) {
+                const err = await res.text()
+                console.error("Load goals failed:", err)
+                return
+            }
+            if (res.ok) {
+                const data = await res.json()
+                console.log("Goals loaded:", data)
+                setFinished(data._embedded.goalList.filter((g: Goal) => g.status === 'Finalizada'))
+                setPending(data._embedded.goalList.filter((g: Goal) => g.status === 'Pendente'))
+            }
+
+        }
+        catch (error) {
+            console.error("An error occurred:", error)
+        }
+    }
+
+    React.useEffect(() => {
+        handleLoadGoals();
+    }, []);
+
+    const reloadSignal = useGoalsStore((state: GoalsState) => state.reloadSignal)
+    React.useEffect(() => {
+        if (reloadSignal > 0) {
+            handleLoadGoals()
+        }
+    }, [reloadSignal])
+
+    const handleComplete = async (goal: Goal) => {
+        const userID = await cookieStore.get("idGoalsUser").then(cookie => cookie?.value || "");
+        try {
+            const res = await fetch(goal._links.update.href, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: 'Finalizada' })
+
+            })
+
+            if (!res.ok) {
+                const err = await res.text()
+                console.error("Patch failed:", err)
+                return
+            }
+            if (res.ok) {
+                handleLoadGoals();
+            }
+
+        }
+        catch (error) {
+            console.error("An error occurred:", error)
+        }
+
     }
 
     return (

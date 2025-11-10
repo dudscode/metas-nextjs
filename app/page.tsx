@@ -16,7 +16,7 @@ export default function Home() {
       <Title />
       <section className="flex justify-center items-center flex-col">
         <Search />
-        <ListClient />
+        <ListClient/>
       </section>
     </main>
   );

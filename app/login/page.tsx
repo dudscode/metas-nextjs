@@ -26,7 +26,7 @@ export default function Login() {
 
             const data = await res.json()
             setError(false)
-            document.cookie = `idGoalsUser=${data.idUser}; path=/`
+            document.cookie = `idGoalsUser=${data.idUser}; path=/; max-age=86400` // 1 dia
             console.log("login success:", data)
             router.push('/')
         } catch (error) {

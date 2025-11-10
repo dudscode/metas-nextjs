@@ -93,7 +93,7 @@ export function LoginForm({ className, onLogin, ...props }: LoginFormProps) {
                                     {isSubmitting ? "Entrando..." : "Login"}
                                 </Button>
                                 <FieldDescription className="text-center">
-                                    Não tem uma conta? <a href="#signup">Inscreva-se</a>
+                                    Não tem uma conta? <a href="/signup">Inscreva-se</a>
                                 </FieldDescription>
                             </Field>
                         </FieldGroup>

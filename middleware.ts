@@ -17,7 +17,7 @@ export function middleware(req: NextRequest) {
   if (pathname === "/login" || pathname === "/signup") return NextResponse.next();
 
   const id = req.cookies.get("idGoalsUser")?.value;
-  if (!id) {
+  if (!id?.length) {
     const url = req.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);

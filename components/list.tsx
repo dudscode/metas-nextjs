@@ -23,7 +23,7 @@ export function List({ goalsFinished = [], goalsPending = [], onComplete }: { go
             <section className="flex justify-center items-center">
                 <h2 className="text-2xl mb-4">Suas metas</h2>
             </section>
-            {!goalsFinished.length  && !goalsPending.length  ? (<p>Você não tem metas ainda.</p>) : (
+            {!goalsFinished.length && !goalsPending.length ? (<p>Você não tem metas ainda.</p>) : (
                 <section className="flex flex-row justify-around">
                     {
                         goalsPending.length ? (
@@ -31,7 +31,6 @@ export function List({ goalsFinished = [], goalsPending = [], onComplete }: { go
                                 {goalsPending.map((goal) => (
                                     <div key={goal.id}>
                                         <Item key={(goal as any).id ?? goal.name} className="mb-4">
-                                            <ItemHeader>Pendentes</ItemHeader>
                                             <ItemContent>
                                                 <ItemTitle>{goal.name}</ItemTitle>
                                                 <ItemDescription>{goal.description}</ItemDescription>
@@ -45,6 +44,9 @@ export function List({ goalsFinished = [], goalsPending = [], onComplete }: { go
                                                 </Button>
                                             </ItemActions>
                                         </Item>
+                                        <div className="mx-4">
+                                            <Separator />
+                                        </div>
                                     </div>
                                 ))}
                             </div>
@@ -53,35 +55,33 @@ export function List({ goalsFinished = [], goalsPending = [], onComplete }: { go
 
                     }
                     {
-                        goalsPending.length  ? (
+                        goalsPending.length && goalsFinished.length ? (
                             <div className="mx-4">
                                 <Separator orientation="vertical" />
                             </div>
-                        ): null}
+                        ) : null}
 
+                    {goalsFinished.length ? (
+                        <div>
 
-                    <div>
-                        {goalsFinished.length  && goalsFinished.map((goal) => (
+                            {goalsFinished.map((goal) => (
 
-                            <div key={goal.id}>
-                                <Item className="mb-4">
-                                    <ItemHeader>Finalizadas</ItemHeader>
-                                    <ItemContent>
-                                        <ItemTitle>{goal.name}</ItemTitle>
-                                        <ItemDescription>{goal.description}</ItemDescription>
-                                    </ItemContent>
-                                    <ItemContent>
-                                        <Badge variant='secondary' className='bg-teal-800'>{goal.status}</Badge>
-                                    </ItemContent>
+                                <div key={goal.id}>
+                                    <Item className="mb-4">
+                                        <ItemHeader>Finalizadas</ItemHeader>
+                                        <ItemContent>
+                                            <ItemTitle>{goal.name}</ItemTitle>
+                                            <ItemDescription>{goal.description}</ItemDescription>
+                                        </ItemContent>
+                                        <ItemContent>
+                                            <Badge variant='secondary' className='bg-teal-800'>{goal.status}</Badge>
+                                        </ItemContent>
 
-                                </Item>
-                            </div>
-                        ))}
-                    </div>
-
-
-
-
+                                    </Item>
+                                </div>
+                            ))}
+                        </div>
+                    ) : null}
 
                 </section>
             )}
